@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<%- include('partials/head.ejs') %>
+
+    <body>
+        <div class="m-3">
+            <a href="/" class="text-white text-decoration-none">
+                <i class="bi bi-arrow-left fs-3"></i>
+            </a>
+        </div>
+
+        <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+
+            <div class="card border-secondary shadow p-3" style="max-width: 400px; width: 100%;">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Sign In</h3>
+
+                    <form action="/loginProcess" method="POST">
+
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <div class="input-group">
+                                <input type="text" name="username" class="form-control" required>
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <input type="password" id="pwd" name="password" class="form-control" required>
+                                <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Login</button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="small text-muted mb-2">You don't have an account?</p>
+                        <a href="/signup" class="btn btn-outline-info btn-sm rounded-pill">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <% if (typeof (loginError) !=="undefined" ) { %>
+            <div class="container d-flex justify-content-center">
+                <div class="alert alert-danger text-center w-50">
+                    <%= loginError %>
+                </div>
+            </div>
+            <% } %>
+
+                <%- include('partials/footer.ejs')%>
+
+
+                    <script>
+                        const pwd = document.querySelector("#pwd");
+                        const toggleBtn = document.querySelector("#togglePassword");
+                        const eyeIcon = document.querySelector("#eyeIcon");
+
+                        toggleBtn.addEventListener("click", () => {
+                            // Toggle the type attribute
+                            const type = pwd.getAttribute("type") === "password" ? "text" : "password";
+                            pwd.setAttribute("type", type);
+
+                            // Toggle the icon class
+                            eyeIcon.classList.toggle("bi-eye");
+                            eyeIcon.classList.toggle("bi-eye-slash");
+                        });
+                    </script>
+    </body>
+
+</html>
