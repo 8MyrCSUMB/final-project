@@ -117,6 +117,14 @@ app.post('/loginProcess', async (req, res) => {
     }
 });
 
+app.get('/search', isUserAuthenticated,(req,res) => {
+    let musicName = req.body.musicName;
+    let sql = 'SELECT songName FROM likedMusic WHERE songName = ?;'
+    const [rows] = await pool.query(sql, [musicName]);
+
+    res.render('search.ejs', {rows});
+})
+
 app.get('/profile', isUserAuthenticated, (req, res) => {
     res.render('profile.ejs');
 });
