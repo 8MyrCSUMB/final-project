@@ -5,21 +5,12 @@
 
     <body class="text-center">
 
-        <!-- navbar -->
-        <nav class="navbar bg-body-tertiary shadow-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">Home</a>
+        <%- include('partials/navbar.ejs')%>
 
-                <div class="d-flex">
-                    <a href="/login"><button type="button" class="btn btn-primary">Sign In / Sign Up</button></a>
-                </div>
-            </div>
-        </nav>
+            <br>
+            <h1>MusicaBox</h1>
 
-        <br>
-        <h1>MusicaBox</h1>
-
-        <%- include('partials/footer.ejs')%>
+            <%- include('partials/footer.ejs')%>
     </body>
 
 </html>
