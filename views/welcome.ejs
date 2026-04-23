@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <%- include('partials/head.ejs') %>
 
 
     <body>
-        <h1>Welcome <%= fullName %> !
-        </h1>
-        <a href="/profile">Profile</a>
-        <a href="/logout">Logout</a>
-        <%- include('partials/footer.ejs')%>
+        <%- include('partials/navbarLoggedIn.ejs')%>
+
+
+            <h1>Welcome <%= fullName %> !
+            </h1>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout</a>
+            <%- include('partials/footer.ejs')%>
 
     </body>
 
