@@ -117,20 +117,20 @@ app.post('/loginProcess', async (req, res) => {
     }
 });
 
-app.get('/search', async (req, res) => {
+app.get('/search', isUserAuthenticated, async (req, res) => {
     let message = "";
+    let result = [];
     try {
         let search = req.query.musicName;
         let url = `https://api.deezer.com/search?q=${search}`;
         const response = await fetch(url);
         const data = await response.json();
         console.log(data);
-        let result = [];
-        for (let i = 0; data.data.length && i < 20; i++) {
+        for (let i = 0; i < data.data.length && i < 20; i++) {
             let dico = [];
             dico.push(data.data[i].artist.name);
             dico.push(data.data[i].title);
-            dico.push(data.data[i].artist.picture_medium);
+            dico.push(data.data[i].artist.picture_small);
             dico.push(data.data[i].preview);
             result.push(dico);
         }
@@ -152,6 +152,38 @@ app.get('/profile', isUserAuthenticated, (req, res) => {
 
 app.get('/welcome', isUserAuthenticated, (req, res) => {
     res.render('welcome.ejs', { "fullName": req.session.fullName });
+});
+
+app.get('/liked', isUserAuthenticated, async (req, res) => {
+    let musicName = req.query.musicName;
+    let artistName = req.query.artistName;
+    let message = "";
+    let result = [];
+    try {
+        let url = `https://api.deezer.com/search?q=artist:"${artistName}" track:"${musicName}"`;
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data);
+        result.push(data.data[0].artist.name);
+        result.push(data.data[0].title);
+        result.push(data.data[0].artist.picture_small);
+        result.push(data.data[0].preview);
+
+        //let sql = `INSERT INTO login (username, password, email, firstname, lastname) VALUES (?, ?, ?, ?, ?);`;
+        //await pool.query(sql, [username, hashedPassword, email, firstname, lastname]);
+        console.log();
+        
+        res.render('liked.ejs', { result, message });
+    } catch (err) {
+        if (err instanceof TypeError) {
+            message = "Artist or music not found";
+            res.render("liked.ejs", { message, result });
+        } else {
+            console.log();
+            res.render('liked.ejs');
+        }
+
+    }
 });
 
 app.get('/settings', isUserAuthenticated, (req, res) => {

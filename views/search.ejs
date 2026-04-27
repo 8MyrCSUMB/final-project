@@ -4,7 +4,7 @@
 <%- include('partials/head.ejs') %>
 
     <body>
-        <%- include('partials/navbar.ejs')%>
+        <%- include('partials/navbarLoggedIn.ejs')%>
 
             <form action="/search" method="get">
                 <label for="musicName">Search an artist or a music</label>
@@ -12,12 +12,18 @@
                 <button type="submit">Search</button>
             </form>
 
+
             <% for (let i=0; i < result.length; i++) { %>
                 <%= result[i][0] %>
                     <%= result[i][1] %><img src="<%=result[i][2] %>"> <audio src="<%= result[i][3] %>"
                             controls>preview</audio>
+                        <div class="d-flex">
+                            <a href="/liked?artistName=<%= result[i][0] %>&musicName=<%= result[i][1] %>"><button
+                                    type="button" class="btn btn-primary">Add to liked</button></a>
+                        </div>
                         <br>
                         <% } %>
+
                             <%= message %>
 
                                 <%- include('partials/footer.ejs')%>
