@@ -46,7 +46,6 @@ function isUserNotAuthenticated(req, res, next) {
     }
 }
 
-
 //routes
 app.get('/', isUserNotAuthenticated, (req, res) => {
     res.render('home.ejs');
@@ -172,7 +171,7 @@ app.get('/liked', isUserAuthenticated, async (req, res) => {
         //let sql = `INSERT INTO login (username, password, email, firstname, lastname) VALUES (?, ?, ?, ?, ?);`;
         //await pool.query(sql, [username, hashedPassword, email, firstname, lastname]);
         console.log();
-        
+
         res.render('liked.ejs', { result, message });
     } catch (err) {
         if (err instanceof TypeError) {
@@ -186,11 +185,7 @@ app.get('/liked', isUserAuthenticated, async (req, res) => {
     }
 });
 
-app.get('/settings', isUserAuthenticated, (req, res) => {
-    res.render('settings.ejs');
-});
-
-app.get('/logout', (req, res) => {
+app.get('/logout', isUserAuthenticated, (req, res) => {
     req.session.destroy();
     res.redirect('/')
 });
