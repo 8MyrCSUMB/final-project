@@ -117,13 +117,34 @@ app.post('/loginProcess', async (req, res) => {
     }
 });
 
-app.get('/search', isUserAuthenticated,(req,res) => {
-    let musicName = req.body.musicName;
-    let sql = 'SELECT songName FROM likedMusic WHERE songName = ?;'
-    const [rows] = await pool.query(sql, [musicName]);
+app.get('/search', async (req, res) => {
+    let message = "";
+    try {
+        let search = req.query.musicName;
+        let url = `https://api.deezer.com/search?q=${search}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(data);
+        let result = [];
+        for (let i = 0; data.data.length && i < 20; i++) {
+            let dico = [];
+            dico.push(data.data[i].artist.name);
+            dico.push(data.data[i].title);
+            dico.push(data.data[i].artist.picture_medium);
+            dico.push(data.data[i].preview);
+            result.push(dico);
+        }
 
-    res.render('search.ejs', {rows});
-})
+        res.render('search.ejs', { result, message });
+    } catch (err) {
+        if (err instanceof TypeError) {
+            message = "Artist or music not found";
+            res.render("search.ejs", { message, result });
+        } else {
+            console.log();
+        }
+    }
+});
 
 app.get('/profile', isUserAuthenticated, (req, res) => {
     res.render('profile.ejs');

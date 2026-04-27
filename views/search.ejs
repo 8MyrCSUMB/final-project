@@ -4,13 +4,23 @@
 <%- include('partials/head.ejs') %>
 
     <body>
-        <form action="/search" method="get">
-            <label for="musicName">Search a music</label>
-            <input type="text" name="musicName">
-            <button type="submit">Search</button>
-        </form>
+        <%- include('partials/navbar.ejs')%>
 
-        <%= for %>
+            <form action="/search" method="get">
+                <label for="musicName">Search an artist or a music</label>
+                <input type="text" name="musicName">
+                <button type="submit">Search</button>
+            </form>
+
+            <% for (let i=0; i < result.length; i++) { %>
+                <%= result[i][0] %>
+                    <%= result[i][1] %><img src="<%=result[i][2] %>"> <audio src="<%= result[i][3] %>"
+                            controls>preview</audio>
+                        <br>
+                        <% } %>
+                            <%= message %>
+
+                                <%- include('partials/footer.ejs')%>
     </body>
 
 </html>
