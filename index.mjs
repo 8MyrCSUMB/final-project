@@ -158,6 +158,7 @@ app.get('/liked', isUserAuthenticated, async (req, res) => {
     let artistName = req.query.artistName;
     let message = "";
     let result = [];
+    let liked = [];
     try {
         let url = `https://api.deezer.com/search?q=artist:"${artistName}" track:"${musicName}"`;
         const response = await fetch(url);
@@ -167,19 +168,35 @@ app.get('/liked', isUserAuthenticated, async (req, res) => {
         result.push(data.data[0].title);
         result.push(data.data[0].artist.picture_small);
         result.push(data.data[0].preview);
+        result.push(data.data[0].id);
 
-        //let sql = `INSERT INTO login (username, password, email, firstname, lastname) VALUES (?, ?, ?, ?, ?);`;
-        //await pool.query(sql, [username, hashedPassword, email, firstname, lastname]);
+        let [firstName, lastName] = req.session.fullName.split(' ');
+        let sql = 'SELECT userId FROM login WHERE firstname = ? AND lastname = ?;'
+        const [rows] = await pool.query(sql, [firstName, lastName]);
+
+        let sql2 = `INSERT INTO likedMusic (userId, songName, artistName, musicLink) VALUES (?, ?, ?, ?);`;
+        await pool.query(sql2, [rows[0].userId, result[1], result[0], result[3]]);
+
+        let sql3 = 'SELECT artistName, songName, musicLink FROM likedMusic WHERE userId = ?;'
+        const [rows2] = await pool.query(sql3, [rows[0].userId]);
+
+        for (let i = 0; i < rows2.length; i++) {
+            let url = `https://api.deezer.com/search?q=artist:"${rows2[i].artistName}" track:"${rows2[i].songName}"`;
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log(data);
+            liked.push({ picture: data.data[0].artist.picture_small, preview: data.data[0].preview });
+        }
         console.log();
 
-        res.render('liked.ejs', { result, message });
+        res.render('liked.ejs', { rows2, message, liked });
     } catch (err) {
         if (err instanceof TypeError) {
             message = "Artist or music not found";
             res.render("liked.ejs", { message, result });
         } else {
             console.log();
-            res.render('liked.ejs');
+            res.render('liked.ejs', { message, result });
         }
 
     }

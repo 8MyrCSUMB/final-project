@@ -4,9 +4,13 @@
 
     <body>
         <%- include('partials/navbarLoggedIn.ejs')%>
-            <%= result[0] %>
-                <%= result[1] %>
-                    <%- include('partials/footer.ejs')%>
+            <% for(let i in rows2) { %>
+                <%= rows2[i].artistName %>
+                    <%= rows2[i].songName %> <audio src="<%= liked[i].preview %>" controls>preview</audio>
+                        <img src="<%= liked[i].picture %>">
+                        <br>
+                        <% } %>
+                            <%- include('partials/footer.ejs')%>
     </body>
 
 </html>
