@@ -109,7 +109,12 @@ app.post('/loginProcess', async (req, res) => {
     if (match) {
         req.session.authenticated = true;
         req.session.fullName = rows[0].firstname + " " + rows[0].lastname;
-        res.redirect('/welcome');
+        if (username == "admin") {
+            res.redirect('/adminPage');
+        }
+        else {
+            res.redirect('/welcome');
+        }
     } else {
         let loginError = "Wrong Credentials ! Try Again !"
         res.render('login.ejs', { loginError });
@@ -200,6 +205,10 @@ app.get('/liked', isUserAuthenticated, async (req, res) => {
         }
 
     }
+});
+
+app.get('/adminPage', isUserAuthenticated, (req, res) => {
+    res.render('adminPage.ejs');
 });
 
 app.get('/logout', isUserAuthenticated, (req, res) => {
