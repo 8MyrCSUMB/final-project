@@ -46,6 +46,17 @@ function isUserNotAuthenticated(req, res, next) {
     }
 }
 
+async function isAdmin(req, res, next) {
+    let sql = 'SELECT * FROM login WHERE firstname = ? AND lastname = ?;'
+    let [fname, lname] = req.session.fullName.split(' ');
+    const [rows] = await pool.query(sql, [fname, lname]);
+    if (req.session.authenticated && rows[0].userId == 1) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
 //routes
 app.get('/', isUserNotAuthenticated, (req, res) => {
     res.render('home.ejs');
@@ -207,7 +218,20 @@ app.get('/liked', isUserAuthenticated, async (req, res) => {
     }
 });
 
-app.get('/adminPage', isUserAuthenticated, (req, res) => {
+app.get('/adminPage', isAdmin, (req, res) => {
+    res.render('adminPage.ejs');
+});
+
+app.get('/allUsers', isAdmin, async (req, res) => {
+    let sql = 'SELECT * FROM login;'
+    const [rows] = await pool.query(sql);
+    res.render('allUsers.ejs', { rows });
+});
+
+app.get('/deleteUser', isAdmin, async (req, res) => {
+    let userId = req.query.userId;
+    let sql = `DELETE FROM login WHERE userId = ?`
+    const [rows] = await pool.query(sql, [userId]);
     res.render('adminPage.ejs');
 });
 

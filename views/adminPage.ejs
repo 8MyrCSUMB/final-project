@@ -3,19 +3,11 @@
 <%- include('partials/head.ejs') %>
 
     <body>
-        <nav class="navbar bg-body-tertiary shadow-sm">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">Home</a>
-                <a class="navbar-brand" href="/profile">All users</a>
-                <a class="navbar-brand" href="/settings">Settings</a>
-                <div class="d-flex">
-                    <a href="/logout"><button type="button" class="btn btn-primary">Log Out</button></a>
-                </div>
-            </div>
-        </nav>
-        <h1>This is the Admin's page</h1>
+        <%- include('partials/navbarAdmin.ejs')%>
 
-        <%- include('partials/footer.ejs')%>
+            <h1>This is the Admin's page</h1>
+
+            <%- include('partials/footer.ejs')%>
 
     </body>
 
