@@ -7,7 +7,7 @@
     <body>
         <%- include('partials/navbarAdmin.ejs')%>
 
-            <h1>All Users</h1>
+            <h1 class="display-4 fw-bold text-center">All Users</h1>
             <div class="container mt-4">
                 <table class="table table-striped align-middle">
                     <thead>
@@ -29,18 +29,25 @@
                                             <input type="hidden" name="userId" value="<%= i.userId %>">
                                     </td>
                                     <td><input type="text" name="username" value="<%= i.username %>"
-                                            class="form-control" required></td>
+                                            class="form-control" <%=i.username===currentUsername ? 'readonly' : '' %>
+                                        required></td>
                                     <td><input type="email" name="email" value="<%= i.email %>" class="form-control"
-                                            required></td>
+                                            <%=i.username===currentUsername ? 'readonly' : '' %> required></td>
                                     <td><input type="text" name="firstname" value="<%= i.firstname %>"
-                                            class="form-control" required></td>
+                                            class="form-control" <%=i.username===currentUsername ? 'readonly' : '' %>
+                                        required></td>
                                     <td><input type="text" name="lastname" value="<%= i.lastname %>"
-                                            class="form-control" required></td>
+                                            class="form-control" <%=i.username===currentUsername ? 'readonly' : '' %>
+                                        required></td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <button type="submit" class="btn btn-success">Update</button>
-                                            <a href="/deleteUser?userId=<%= i.userId %>"
-                                                class="btn btn-danger">Delete</a>
+                                            <% if (i.username !==currentUsername) { %>
+                                                <button type="submit" class="btn btn-success">Update</button>
+                                                <a href="/deleteUser?userId=<%= i.userId %>"
+                                                    class="btn btn-danger">Delete</a>
+                                                <% } else { %>
+                                                    <span class="text-muted">Active</span>
+                                                    <% } %>
                                         </div>
                                     </td>
                                 </form>

@@ -5,7 +5,24 @@
     <body>
         <%- include('partials/navbarAdmin.ejs')%>
 
-            <h1>This is the Admin's page</h1>
+            <div class="container py-5">
+                <header class="py-4 text-center">
+                    <h1 class="display-4 fw-bold">Admin Dashboard</h1>
+                    <p class="lead text-secondary">Manage MusicaBox users and oversee the platform.</p>
+                </header>
+
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 bg-secondary bg-opacity-10 text-center p-4">
+                            <div class="card-body">
+                                <h3 class="fw-semibold mb-3">User Management</h3>
+                                <p class="text-muted mb-4">Review all registered users on MusicaBox, update their profiles, or remove accounts from the system.</p>
+                                <a href="/allUsers" class="btn btn-primary px-4">Manage Users</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <%- include('partials/footer.ejs')%>
 

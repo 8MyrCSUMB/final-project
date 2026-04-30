@@ -22,38 +22,37 @@ router.post('/signupProcess', async (req, res) => {
     }
 });
 
-// route that checks username and password
 router.post('/loginProcess', async (req, res) => {
-    // let username = req.body.username;
-    // let password = req.body.password;
     let { username, password } = req.body;
-    let hashedPassword = '';
-    console.log(username + " " + password + hashedPassword)
+
+    let sqlAdmin = 'SELECT * FROM admin WHERE username = ?;';
+    const [adminRows] = await pool.query(sqlAdmin, [username]);
+
+    if (adminRows.length > 0) {
+        const matchAdmin = await bcrypt.compare(password, adminRows[0].password);
+        if (matchAdmin) {
+            req.session.authenticated = true;
+            req.session.fullName = adminRows[0].firstname + " " + adminRows[0].lastname;
+            req.session.username = adminRows[0].username;
+            return res.redirect('/adminPage');
+        }
+    }
+
     let sql = 'SELECT * FROM login WHERE username = ?;'
     const [rows] = await pool.query(sql, [username]);
 
-    if (rows.length > 0) { // username was found in the database
-        hashedPassword = rows[0].password
+    if (rows.length > 0) {
+        const matchUser = await bcrypt.compare(password, rows[0].password);
+        if (matchUser) {
+            req.session.authenticated = true;
+            req.session.fullName = rows[0].firstname + " " + rows[0].lastname;
+            req.session.username = rows[0].username;
+            return res.redirect('/welcome');
+        }
     }
 
-    const match = await bcrypt.compare(password, hashedPassword);
-
-    if (match) {
-        req.session.authenticated = true;
-        req.session.fullName = rows[0].firstname + " " + rows[0].lastname;
-        req.session.username = rows[0].username;
-        let sqlAdmin = 'SELECT * FROM admin WHERE username = ?;';
-        const [adminRows] = await pool.query(sqlAdmin, [rows[0].username]);
-        if (adminRows.length > 0) {
-            res.redirect('/adminPage');
-        }
-        else {
-            res.redirect('/welcome');
-        }
-    } else {
-        let loginError = "Wrong Credentials ! Try Again !"
-        res.render('login.ejs', { loginError });
-    }
+    let loginError = "Wrong Credentials ! Try Again !";
+    res.render('login.ejs', { loginError });
 });
 
 router.get('/profile', isUserAuthenticated, (req, res) => {

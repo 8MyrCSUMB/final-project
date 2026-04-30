@@ -11,7 +11,7 @@ router.get('/adminPage', isAdmin, (req, res) => {
 router.get('/allUsers', isAdmin, async (req, res) => {
     let sql = 'SELECT * FROM login;'
     const [rows] = await pool.query(sql);
-    res.render('allUsers.ejs', { rows });
+    res.render('allUsers.ejs', { rows, currentUsername: req.session.username });
 });
 
 router.get('/deleteUser', isAdmin, async (req, res) => {
