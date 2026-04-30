@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <%- include('partials/head.ejs') %>
 
@@ -8,22 +8,48 @@
         <%- include('partials/navbarAdmin.ejs')%>
 
             <h1>All Users</h1>
-            <% for(let i of rows) { %>
-                <%= i.userId %>
-                    <%= i.username %>
-                        <%= i.firstname %>
-                            <%= i.lastname %>
-                                <div class="d-flex">
-                                    <a href="/updateUser?userId=<%= i.userId %>"><button type="button"
-                                            class="btn btn-primary">Edit</button></a>
-                                </div>
-                                <div class="d-flex">
-                                    <a href="/deleteUser?userId=<%= i.userId %>"><button type="button"
-                                            class="btn btn-primary">Delete</button></a>
-                                </div>
-                                <br>
-                                <% } %>
-                                    <%- include('partials/footer.ejs')%>
+            <div class="container mt-4">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for(let i of rows) { %>
+                            <tr>
+                                <form action="/updateUser" method="POST">
+                                    <td>
+                                        <%= i.userId %>
+                                            <input type="hidden" name="userId" value="<%= i.userId %>">
+                                    </td>
+                                    <td><input type="text" name="username" value="<%= i.username %>"
+                                            class="form-control" required></td>
+                                    <td><input type="email" name="email" value="<%= i.email %>" class="form-control"
+                                            required></td>
+                                    <td><input type="text" name="firstname" value="<%= i.firstname %>"
+                                            class="form-control" required></td>
+                                    <td><input type="text" name="lastname" value="<%= i.lastname %>"
+                                            class="form-control" required></td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-success">Update</button>
+                                            <a href="/deleteUser?userId=<%= i.userId %>"
+                                                class="btn btn-danger">Delete</a>
+                                        </div>
+                                    </td>
+                                </form>
+                            </tr>
+                            <% } %>
+                    </tbody>
+                </table>
+            </div>
+            <%- include('partials/footer.ejs')%>
     </body>
 
 </html>
