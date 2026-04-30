@@ -100,4 +100,32 @@ router.get('/liked', isUserAuthenticated, async (req, res) => {
     }
 });
 
+router.get('/searchUser', isUserAuthenticated, async (req, res) => {
+    let username = req.query.username;
+    let sql = `SELECT * FROM likedMusic NATURAL JOIN login WHERE username = ?`;
+    let [rows] = await pool.query(sql, [username]);
+    let liked = [];
+    for (let i = 0; i < rows.length; i++) {
+        try {
+            let url = `https://api.deezer.com/search?q=artist:"${rows[i].artistName}" track:"${rows[i].songName}"`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.data && data.data.length > 0) {
+                liked.push({ picture: data.data[0].artist.picture_small, preview: data.data[0].preview });
+            } else {
+                liked.push({ picture: "", preview: rows2[i].musicLink });
+            }
+        } catch (e) {
+            liked.push({ picture: "", preview: rows2[i].musicLink });
+        }
+    }
+    res.render('searchUser.ejs', { rows, liked });
+});
+
+router.get('/searchAUser', isUserAuthenticated, (req, res) => {
+    let rows = [];
+    let liked = [];
+    res.render('searchUser.ejs', { rows, liked });
+})
+
 export default router;
