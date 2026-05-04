@@ -23,13 +23,16 @@ router.get('/deleteUser', isAdmin, async (req, res) => {
 
 router.post('/updateUser', isAdmin, async (req, res) => {
     try {
-        let { userId, username, email, firstname, lastname } = req.body;
-        let sql = `UPDATE login SET username = ?, email = ?, firstname = ?, lastname = ? WHERE userId = ?;`;
-        await pool.query(sql, [username, email, firstname, lastname, userId]);
+        let { userId, username, email, firstname, lastname, dob, sex } = req.body;
+        let sql = `UPDATE login SET username = ?, email = ?, firstname = ?, lastname = ?, dob = ?, sex = ? WHERE userId = ?;`;
+        await pool.query(sql, [username, email, firstname, lastname, dob, sex, userId]);
         res.redirect('/allUsers');
     } catch (err) {
         console.error(err);
-        res.status(500).send("Error updating user");
+        let errorMessage = "Email and Username has to be unique.";
+        let sqlFetch = 'SELECT * FROM login;';
+        const [rows] = await pool.query(sqlFetch);
+        res.render('allUsers.ejs', { rows, currentUsername: req.session.username, errorMessage });
     }
 });
 

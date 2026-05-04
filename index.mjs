@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import express from 'express';
 import session from 'express-session';
-import { isUserNotAuthenticated } from './middlewares/middlewares.mjs';
+import { isAdmin, isUserNotAuthenticated } from './middlewares/middlewares.mjs';
 import adminRoutes from './routes/admin.mjs';
 import userRoutes from './routes/login-signup-user.mjs';
 import featuresRoutes from './routes/features.mjs';
@@ -30,11 +30,11 @@ app.use(userRoutes);
 app.use(featuresRoutes);
 
 
-app.get('/', isUserNotAuthenticated, (req, res) => {
+app.get('/', isUserNotAuthenticated, async (req, res) => {
     res.render('home.ejs');
 });
 
-app.get("/dbTest", async (req, res) => {
+app.get("/dbTest", isAdmin, async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT CURDATE()");
         res.send(rows);

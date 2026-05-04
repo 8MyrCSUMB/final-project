@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
-
 <%- include('partials/head.ejs') %>
-
 
     <body>
         <%- include('partials/navbarAdmin.ejs')%>
 
-            <h1 class="display-4 fw-bold text-center">All Users</h1>
             <div class="container mt-4">
+                <h1 class="display-4 fw-bold text-center">All Users</h1>
+
                 <table class="table table-striped align-middle">
                     <thead>
                         <tr>
@@ -17,37 +16,44 @@
                             <th>Email</th>
                             <th>First Name</th>
                             <th>Last Name</th>
+                            <th>DoB</th>
+                            <th>Sex</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% for(let i of rows) { %>
+                        <% for(let i of rows) { const date=i.dob ? new Date(i.dob).toISOString().split('T')[0] : '' ; %>
                             <tr>
                                 <form action="/updateUser" method="POST">
+                                    <input type="hidden" name="userId" value="<%= i.userId %>">
+
                                     <td>
                                         <%= i.userId %>
-                                            <input type="hidden" name="userId" value="<%= i.userId %>">
                                     </td>
                                     <td><input type="text" name="username" value="<%= i.username %>"
-                                            class="form-control" <%=i.username===currentUsername ? 'readonly' : '' %>
-                                        required></td>
+                                            class="form-control" required></td>
                                     <td><input type="email" name="email" value="<%= i.email %>" class="form-control"
-                                            <%=i.username===currentUsername ? 'readonly' : '' %> required></td>
+                                            required></td>
                                     <td><input type="text" name="firstname" value="<%= i.firstname %>"
-                                            class="form-control" <%=i.username===currentUsername ? 'readonly' : '' %>
-                                        required></td>
+                                            class="form-control" required></td>
                                     <td><input type="text" name="lastname" value="<%= i.lastname %>"
-                                            class="form-control" <%=i.username===currentUsername ? 'readonly' : '' %>
-                                        required></td>
+                                            class="form-control" required></td>
+                                    <td><input type="date" name="dob" value="<%= date %>" class="form-control" required>
+                                    </td>
+                                    <td>
+                                        <select name="sex" class="form-select" required>
+                                            <% ['M', 'F' , 'O' ].forEach(opt=> { %>
+                                                <option value="<%= opt %>" <%=i.sex===opt ? 'selected' : '' %>><%= opt
+                                                        %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </td>
                                     <td>
                                         <div class="d-flex gap-2">
-                                            <% if (i.username !==currentUsername) { %>
-                                                <button type="submit" class="btn btn-success">Update</button>
-                                                <a href="/deleteUser?userId=<%= i.userId %>"
-                                                    class="btn btn-danger">Delete</a>
-                                                <% } else { %>
-                                                    <span class="text-muted">Active</span>
-                                                    <% } %>
+                                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                                            <a href="/deleteUser?userId=<%= i.userId %>"
+                                                class="btn btn-danger btn-sm">Delete</a>
                                         </div>
                                     </td>
                                 </form>
@@ -55,7 +61,14 @@
                             <% } %>
                     </tbody>
                 </table>
+
+                <% if (locals.errorMessage) { %>
+                    <div class="alert alert-danger text-center">
+                        <%= errorMessage %>
+                    </div>
+                    <% } %>
             </div>
+
             <%- include('partials/footer.ejs')%>
     </body>
 

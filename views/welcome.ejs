@@ -8,9 +8,45 @@
         <%- include('partials/navbarLoggedIn.ejs')%>
 
 
-            <h1>Welcome <%= fullName %> !
+            <h1 class="text-center">Welcome <%= fullName %> !
             </h1>
-            <h2>Explore our website to search, listen and like thousands of music   </h2>
+            <h2 class="text-center">Explore our website to search, listen and like thousands of musics ! </h2>
+            <hr>
+            <h3 class="text-center">Here are the next shows : </h3>
+            <div class="container mt-4">
+
+                <div class="row">
+
+                    <% if (data._embedded && data._embedded.events) { %>
+                        <% for(let i of data._embedded.events) { %>
+                            <div class="col-md-8 mx-auto mb-4">
+                                <div class="card flex-md-row shadow-sm">
+                                    <img src="<%= i.images && i.images.length > 0 ? i.images[0].url : '' %>"
+                                        class="card-img-left" style="width: 100%; max-width: 300px; object-fit: cover;"
+                                        alt="">
+                                    <div class="card-body d-flex flex-column justify-content-center">
+                                        <h5 class="card-title">
+                                            <%= i.name %>
+                                        </h5>
+                                        <p class="card-text">
+                                            <%= i.dates && i.dates.start ? i.dates.start.localDate : 'TBD' %>
+                                        </p>
+                                        <div>
+                                            <a href="<%= i.url %>" class="btn btn-primary">Buy Tickets</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <% } %>
+                                <% } else { %>
+                                    <p>No events found.</p>
+                                    <% } %>
+
+                </div>
+
+                <hr>
+
+            </div>
             <%- include('partials/footer.ejs')%>
 
     </body>
