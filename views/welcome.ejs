@@ -5,7 +5,9 @@
 
 
     <body>
+
         <%- include('partials/navbarLoggedIn.ejs')%>
+            <canvas id="vanillaConfettiCanvas"></canvas>
 
 
             <h1 class="text-center">Welcome <%= fullName %> !
@@ -47,7 +49,50 @@
                 <hr>
 
             </div>
+            <style>
+                canvas {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    pointer-events: none;
+                    z-index: 999;
+                }
+            </style>
             <%- include('partials/footer.ejs')%>
+                <script type="module">
+
+                    import { generateConfetti } from "/js/vanillaConfetti.min.js";
+
+                    const confettiConfigObj = {
+                        colorsArray: [
+                            "rgba(255, 180, 185, 1)",
+                            "rgba(255, 220, 185, 1)",
+                            "rgba(255, 255, 185, 1)",
+                            "rgba(185, 255, 200, 1)",
+                            "rgba(185, 225, 255, 1)",
+                            "rgba(215, 185, 255, 1)"
+                        ],
+                        velocity: 0.025,
+                        quantity: 750,
+                        minSize: 4,
+                        maxSize: 12,
+                        minOpacity: 0.75,
+                        maxOpacity: 1,
+                        infiniteLoop: false
+                    };
+
+                    const launch = () => {
+                        const canvas = document.getElementById("vanillaConfettiCanvas");
+                        if (canvas) {
+                            canvas.width = window.innerWidth;
+                            canvas.height = window.innerHeight;
+                            generateConfetti(confettiConfigObj, "vanillaConfettiCanvas");
+                        }
+                    };
+                    window.addEventListener('load', launch);
+                </script>
 
     </body>
 
