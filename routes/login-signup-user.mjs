@@ -60,7 +60,9 @@ router.get('/profile', isUserAuthenticated, async (req, res) => {
         let sql = `SELECT * FROM login WHERE username = ?`;
         const [rows] = await pool.query(sql, [req.session.username]);
         if (rows.length > 0) {
-            res.render('profile.ejs', { user: rows[0] });
+            res.render('profile.ejs', {
+                user: rows[0],
+            });
         } else {
             res.redirect('/welcome');
         }
@@ -72,16 +74,18 @@ router.get('/profile', isUserAuthenticated, async (req, res) => {
 
 router.post('/profile/update', isUserAuthenticated, async (req, res) => {
     try {
-        let { email, firstname, lastname, dob, sex } = req.body;
-        let sql = `UPDATE login SET email = ?, firstname = ?, lastname = ?, dob = ?, sex = ? WHERE username = ?;`;
-        await pool.query(sql, [email, firstname, lastname, dob, sex, req.session.username]);
+        let { firstname, lastname, dob, sex } = req.body;
+        let sql = `UPDATE login SET firstname = ?, lastname = ?, dob = ?, sex = ? WHERE username = ?;`;
+        await pool.query(sql, [firstname, lastname, dob, sex, req.session.username]);
         req.session.fullName = firstname + " " + lastname;
         res.redirect('/profile');
     } catch (err) {
         console.error(err);
         let sqlFetch = `SELECT * FROM login WHERE username = ?`;
         const [rows] = await pool.query(sqlFetch, [req.session.username]);
-        res.render('profile.ejs', { user: rows[0], errorMessage: "Failed to update profile. Email might already be taken.", successMessage: null });
+        res.render('profile.ejs', {
+            user: rows[0],
+        });
     }
 });
 

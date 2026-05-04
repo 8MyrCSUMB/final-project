@@ -33,6 +33,9 @@
                                         <p class="card-text">
                                             <%= i.dates && i.dates.start ? i.dates.start.localDate : 'TBD' %>
                                         </p>
+                                        <p class="card-text">
+                                            <%= i._embedded.venues[0].city.name || 'Location TBD' %>
+                                        </p>
                                         <div>
                                             <a href="<%= i.url %>" class="btn btn-primary">Buy Tickets</a>
                                         </div>
