@@ -3,22 +3,40 @@
 
 <%- include('partials/head.ejs') %>
 
-
     <body>
         <%- include('partials/navbarLoggedIn.ejs')%>
 
-            <form action="/searchUser" method="get">
-                <label for="username">Search a user to see the musics he likes </label>
-                <input type="text" name="username">
-                <button type="submit">Search</button>
+        <div class="container py-5" style="max-width: 700px;">
+
+            <h1 class="fw-bold mb-4 text-center">
+                <i class="bi bi-person-lines-fill me-2"></i>Search by User
+            </h1>
+
+            <form action="/searchUser" method="get" class="input-group mb-5">
+                <input type="text" name="username" class="form-control form-control-lg" placeholder="Enter a username…">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-search"></i>
+                </button>
             </form>
+
             <% for(let i in liked) { %>
-                <%= rows[i].artistName %>
-                    <%= rows[i].songName %> <img src="<%=liked[i].picture %>"> <audio src="<%= liked[i].preview %>"
-                            controls>preview</audio>
-                        <br>
-                        <% } %>
-                            <%- include('partials/footer.ejs')%>
+                <div class="card mb-3 border-0 bg-body-secondary">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-auto">
+                            <img src="<%= liked[i].picture %>" class="rounded-start" style="width:80px; height:80px; object-fit:cover;">
+                        </div>
+                        <div class="col px-3">
+                            <p class="text-muted small mb-0 text-uppercase fw-semibold"><%= rows[i].artistName %></p>
+                            <p class="fw-bold mb-1"><%= rows[i].songName %></p>
+                            <audio src="<%= liked[i].preview %>" controls style="height:30px; width:100%;"></audio>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+        </div>
+
+        <%- include('partials/footer.ejs')%>
 
     </body>
 
