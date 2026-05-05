@@ -33,6 +33,7 @@
                         <div class="mb-3">
                             <label class="form-label">Password</label>
                             <input id="passwordInput" type="password" name="password" class="form-control" required>
+                            <div class="form-text text-muted">Minimum 6 characters.</div>
                         </div>
 
                         <div class="row">
@@ -83,7 +84,7 @@
             <% } %>
 
                 <%- include('partials/footer.ejs')%>
-                    <script src="/public/js/signup.js"></script>
+                    <script src="/js/passwordCheckSignUp.js" defer></script>
     </body>
 
 </html>

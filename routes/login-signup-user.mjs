@@ -74,9 +74,13 @@ router.get('/profile', isUserAuthenticated, async (req, res) => {
 
 router.post('/profile/update', isUserAuthenticated, async (req, res) => {
     try {
-        let { firstname, lastname, dob, sex } = req.body;
-        let sql = `UPDATE login SET firstname = ?, lastname = ?, dob = ?, sex = ? WHERE username = ?;`;
-        await pool.query(sql, [firstname, lastname, dob, sex, req.session.username]);
+        let { firstname, lastname, dob, sex, password } = req.body;
+        console.log(password)
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log(hashedPassword)
+
+        let sql = `UPDATE login SET firstname = ?, password = ?, lastname = ?, dob = ?, sex = ? WHERE username = ?;`;
+        await pool.query(sql, [firstname, hashedPassword, lastname, dob, sex, req.session.username]);
         req.session.fullName = firstname + " " + lastname;
         res.redirect('/profile');
     } catch (err) {
