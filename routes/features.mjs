@@ -35,91 +35,66 @@ router.get('/search', isUserAuthenticated, async (req, res) => {
 
 
 router.get('/liked', isUserAuthenticated, async (req, res) => {
-    let musicName = req.query.musicName;
-    let artistName = req.query.artistName;
+    let { musicName, artistName } = req.query;
     let message = "";
-    let rows2 = [];
-    let liked = [];
 
     try {
-        let sql = 'SELECT userId FROM login WHERE username = ?;'
-        const [rows] = await pool.query(sql, [req.session.username]);
-
-        if (rows.length === 0) {
-            return res.redirect('/');
-        }
-
-        let userId = rows[0].userId;
+        const [user] = await pool.query('SELECT userId FROM login WHERE username = ?', [req.session.username]);
+        if (user.length === 0) return res.redirect('/');
+        let userId = user[0].userId;
 
         if (musicName && artistName) {
-            try {
-                let url = `https://api.deezer.com/search?q=artist:"${artistName}" track:"${musicName}"`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.data && data.data.length > 0) {
-                    let trackId = data.data[0].id;
-                    let songTitle = data.data[0].title;
-                    let artist = data.data[0].artist.name;
-                    let preview = data.data[0].preview;
-
-                    let sql2 = `INSERT INTO likedMusic (musicid, userId, songName, artistName, musicLink) VALUES (?, ?, ?, ?, ?);`;
-                    await pool.query(sql2, [trackId, userId, songTitle, artist, preview]);
-                } else {
-                    message = "Artist or music not found";
-                }
-            } catch (err) {
-                console.error(err);
-                message = "Error adding music";
+            let url = `https://api.deezer.com/search?q=artist:"${artistName}" track:"${musicName}"`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.data && data.data.length > 0) {
+                let t = data.data[0];
+                await pool.query(
+                    `INSERT IGNORE INTO likedMusic (musicid, userId, songName, artistName, musicLink, pictureLink) VALUES (?, ?, ?, ?, ?, ?)`,
+                    [t.id, userId, t.title, t.artist.name, t.preview, t.artist.picture_small]
+                );
             }
         }
 
-        let sql3 = 'SELECT artistName, songName, musicLink FROM likedMusic WHERE userId = ?;'
-        const [fetchedRows] = await pool.query(sql3, [userId]);
-        rows2 = fetchedRows;
-
-        for (let i = 0; i < rows2.length; i++) {
+        const [rows2] = await pool.query('SELECT * FROM likedMusic WHERE userId = ?', [userId]);
+        for (let song of rows2) {
             try {
-                let url = `https://api.deezer.com/search?q=artist:"${rows2[i].artistName}" track:"${rows2[i].songName}"`;
-                const response = await fetch(url);
-                const data = await response.json();
-                if (data.data && data.data.length > 0) {
-                    liked.push({ picture: data.data[0].artist.picture_small, preview: data.data[0].preview });
-                } else {
-                    liked.push({ picture: "", preview: rows2[i].musicLink });
-                }
+                const resDeezer = await fetch(`https://api.deezer.com/track/${song.musicid}`);
+                const dataDeezer = await resDeezer.json();
+                song.musicLink = dataDeezer.preview;
             } catch (e) {
-                liked.push({ picture: "", preview: rows2[i].musicLink });
+                console.error("Error", e);
             }
         }
 
-        res.render('liked.ejs', { rows2, message, liked });
+        res.render('liked.ejs', { rows2, message });
     } catch (err) {
         console.error(err);
-        res.render('liked.ejs', { rows2: [], message: "An error occurred", liked: [] });
+        res.render('liked.ejs', { rows2: [], message: "Error" });
     }
 });
 
 router.get('/searchUser', isUserAuthenticated, async (req, res) => {
-    let username = req.query.username;
-    let sql = `SELECT * FROM likedMusic NATURAL JOIN login WHERE username = ?`;
-    let [rows] = await pool.query(sql, [username]);
-    let liked = [];
-    for (let i = 0; i < rows.length; i++) {
-        try {
-            let url = `https://api.deezer.com/search?q=artist:"${rows[i].artistName}" track:"${rows[i].songName}"`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data.data && data.data.length > 0) {
-                liked.push({ picture: data.data[0].artist.picture_small, preview: data.data[0].preview });
-            } else {
-                liked.push({ picture: "", preview: rows2[i].musicLink });
+    try {
+        let username = req.query.username;
+        let sql = `SELECT * FROM likedMusic NATURAL JOIN login WHERE username = ?`;
+        let [rows] = await pool.query(sql, [username]);
+
+        for (let song of rows) {
+            try {
+                const response = await fetch(`https://api.deezer.com/track/${song.musicid}`);
+                const data = await response.json();
+                song.musicLink = data.preview;
+            } catch (e) {
+                console.error("Error refreshing link for user search:", e);
             }
-        } catch (e) {
-            liked.push({ picture: "", preview: rows2[i].musicLink });
         }
+
+        res.render('searchUser.ejs', { rows });
+    } catch (err) {
+        console.error(err);
+        res.render('searchUser.ejs', { rows: [] });
     }
-    res.render('searchUser.ejs', { rows, liked });
 });
 
 router.get('/searchAUser', isUserAuthenticated, (req, res) => {
