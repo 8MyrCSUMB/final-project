@@ -75,9 +75,7 @@ router.get('/profile', isUserAuthenticated, async (req, res) => {
 router.post('/profile/update', isUserAuthenticated, async (req, res) => {
     try {
         let { firstname, lastname, dob, sex, password } = req.body;
-        console.log(password)
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log(hashedPassword)
 
         let sql = `UPDATE login SET firstname = ?, password = ?, lastname = ?, dob = ?, sex = ? WHERE username = ?;`;
         await pool.query(sql, [firstname, hashedPassword, lastname, dob, sex, req.session.username]);
